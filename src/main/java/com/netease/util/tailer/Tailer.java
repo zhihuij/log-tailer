@@ -10,7 +10,8 @@ import java.io.RandomAccessFile;
  * Utility class for tailing log file.
  * <p>
  * Based on <code>Tailer</code> from apache-commons-io library, and rewrite by
- * adding channel size check to make the tailer more robust to file rotating.
+ * adding inode and channel size check to make the tailer more robust to file
+ * rotating.
  * 
  * @author jiaozhihui@corp.netease.com
  */
@@ -50,14 +51,9 @@ public final class Tailer implements Runnable {
     private volatile boolean pause = false;
 
     /**
-     * Whether to close and reopen the file whilst waiting for more input.
+     * The old inode of the file.
      */
-    private final boolean reOpen;
-
-    /**
-     * Last modified time of the target file.
-     */
-    private long lastModified = 0;
+    private long lastInode = -1;
 
     /**
      * Last position the tailer has read.
@@ -73,24 +69,17 @@ public final class Tailer implements Runnable {
      *            the TailerListener to use
      * @param position
      *            position where tailer should start
-     * @param lastModified
-     *            last modified time we should use for the first check
      * @param delayMillis
      *            the delay between checks of the file for new content in
      *            milliseconds
-     * @param reOpen
-     *            if true, close and reopen the file between reading chunks
      * @param bufSize
      *            buffer size
      */
-    public Tailer(File file, TailerListener listener, long position, long lastModified, long delayMillis, int bufSize,
-            boolean reOpen) {
+    public Tailer(File file, TailerListener listener, long position, long delayMillis, int bufSize) {
         this.file = file;
         this.lastPosition = position;
         this.delayMillis = delayMillis;
-        this.lastModified = lastModified;
         this.inbuf = new byte[bufSize];
-        this.reOpen = reOpen;
 
         // save and prepare the listener
         this.listener = listener;
@@ -160,6 +149,7 @@ public final class Tailer implements Runnable {
                     // last modified and last position already set in
                     // constructor
                     reader.seek(lastPosition);
+                    lastInode = InodeUtil.getInode(file.getAbsolutePath());
                 }
             }
 
@@ -168,37 +158,21 @@ public final class Tailer implements Runnable {
                     Thread.sleep(delayMillis);
                 }
 
-                boolean newer = isFileNewer(file, lastModified);
+                long inode = InodeUtil.getInode(file.getAbsolutePath());
                 long size = reader.getChannel().size();
-                long length = file.length();
 
-                System.out.println("newer=" + newer + ", size=" + size + ", lastPostion=" + lastPosition + ", length="
-                        + length + ", fileLastModified=" + file.lastModified() + ", lastModified=" + lastModified);
-
-                if (size > lastPosition) {
-                    // the file has more content than it did last time
-                    lastPosition = readLines(reader);
-                    if (length != size) {
-                        System.out.println("new file created");
-                        // new file created
-                        continue;
-                    } else {
-                        /*
-                         * we don't know it's the old file updated or a new file
-                         * with same size was created.
-                         * 
-                         * FIXME if the new file with same size was created,
-                         * then: if this new file will be updated before next
-                         * file rotate, then the content in the new file will be
-                         * read in a future check; but if it's not true, the
-                         * content in the new file will be lost.
-                         */
-                        lastModified = System.currentTimeMillis();
+                if (inode != lastInode) {
+                    // new file created
+                    if (size > lastPosition) {
+                        // old file updated, read the update and discard the
+                        // read position
+                        readLines(reader);
                     }
-                } else if (newer && size == lastPosition) {
+
                     // file was rotated
                     listener.fileRotated();
 
+                    long length = file.length();
                     while (length == 0) {
                         // file does not exist or have nothing
                         try {
@@ -220,6 +194,7 @@ public final class Tailer implements Runnable {
                         reader = new RandomAccessFile(file, RAF_MODE);
                         // use the old last modified time
                         lastPosition = 0;
+                        lastInode = InodeUtil.getInode(file.getAbsolutePath());
 
                         /*
                          * close old file explicitly rather than relying on GC
@@ -234,21 +209,17 @@ public final class Tailer implements Runnable {
                         listener.fileNotFound();
                     }
                     continue;
+                } else if (size > lastPosition) {
+                    // old file changed, doesn't need to update lastInode
+                    lastPosition = readLines(reader);
                 } else {
-                    // file not change
+                    // file not changed
                 }
 
                 try {
                     Thread.sleep(delayMillis);
                 } catch (InterruptedException e) {
                     // ignore
-                }
-
-                if (reOpen) {
-                    closeQuietly(reader);
-
-                    reader = new RandomAccessFile(file, RAF_MODE);
-                    reader.seek(lastPosition);
                 }
             }
 
@@ -313,24 +284,4 @@ public final class Tailer implements Runnable {
             // ignore
         }
     }
-
-    /**
-     * Check if the target file is updated.
-     * 
-     * @param file
-     *            the target file
-     * @param timeMillis
-     *            last modified time that saved on last check
-     * @return true if file is updated, false otherwise
-     */
-    protected boolean isFileNewer(File file, long timeMillis) {
-        if (file == null) {
-            throw new IllegalArgumentException("No specified file");
-        }
-        if (!file.exists()) {
-            return false;
-        }
-        return file.lastModified() > timeMillis;
-    }
-
 }

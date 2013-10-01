@@ -22,6 +22,14 @@ public class TailerTest {
     private static final String OLD_FILE_LINE = "old";
     private static final String NEW_FILE_LINE = "new";
 
+    private void writeFile(BufferedWriter writer, int start, int size, String line) throws Exception {
+        for (int i = start; i < start + size; i++) {
+            writer.write(line + i);
+            writer.newLine();
+            writer.flush();
+        }
+    }
+
     abstract class TestLisenter implements TailerListener {
         @Override
         public void init(Tailer tailer) {
@@ -69,11 +77,7 @@ public class TailerTest {
         Assert.assertFalse(targetFile.exists());
 
         BufferedWriter writer = new BufferedWriter(new FileWriter(targetFile, true));
-        for (int i = 0; i < 100; i++) {
-            writer.write(OLD_FILE_LINE + i);
-            writer.newLine();
-            writer.flush();
-        }
+        writeFile(writer, 0, 100, OLD_FILE_LINE);
 
         Listener1 taiListener = new Listener1();
 
@@ -90,12 +94,7 @@ public class TailerTest {
             Assert.assertTrue(resultList.get(i).equals(OLD_FILE_LINE + i));
         }
 
-        for (int i = 100; i < 200; i++) {
-            writer.write(OLD_FILE_LINE + i);
-            writer.newLine();
-            writer.flush();
-        }
-
+        writeFile(writer, 100, 100, OLD_FILE_LINE);
         writer.close();
 
         Thread.sleep(1000);
@@ -126,11 +125,7 @@ public class TailerTest {
         }
 
         BufferedWriter writer = new BufferedWriter(new FileWriter(targetFile, true));
-        for (int i = 0; i < 100; i++) {
-            writer.write(OLD_FILE_LINE + i);
-            writer.newLine();
-            writer.flush();
-        }
+        writeFile(writer, 0, 100, OLD_FILE_LINE);
         writer.close();
 
         Listener1 taiListener = new Listener1();
@@ -148,11 +143,7 @@ public class TailerTest {
         Thread.sleep(1000);
 
         writer = new BufferedWriter(new FileWriter(targetFile, true));
-        for (int i = 0; i < 100; i++) {
-            writer.write(NEW_FILE_LINE + i);
-            writer.newLine();
-            writer.flush();
-        }
+        writeFile(writer, 0, 100, NEW_FILE_LINE);
         writer.close();
 
         Thread.sleep(1000);
@@ -192,7 +183,6 @@ public class TailerTest {
 
         @Override
         public void handle(String line, long position, long lastModified) {
-            System.out.println(line);
             resultList.add(line);
 
             if (resultList.size() == 100) {
@@ -203,14 +193,6 @@ public class TailerTest {
         @Override
         public void fileRotated() {
             newFile = true;
-        }
-    }
-
-    private void writeFile(BufferedWriter writer, int start, int size, String line) throws Exception {
-        for (int i = start; i < start + size; i++) {
-            writer.write(line + i);
-            writer.newLine();
-            writer.flush();
         }
     }
 
@@ -356,8 +338,8 @@ public class TailerTest {
     }
 
     /**
-     * Old file updated, and new file created, and new file is equal with old
-     * file.
+     * Old file updated, and new file created, and new file is equal size with
+     * old file.
      */
     @Test
     public void testOldUpdateAndNew_Equal() throws Exception {
@@ -401,34 +383,24 @@ public class TailerTest {
         targetFile.createNewFile();
         Assert.assertTrue(targetFile.exists());
 
-        // write the new file
+        // write the new file with the same size to old file
         writer = new BufferedWriter(new FileWriter(targetFile, true));
         writeFile(writer, 0, 200, NEW_FILE_LINE);
 
         tailer.resume();
 
-        Thread.sleep(10 * 60 *1000);
+        Thread.sleep(1000);
 
         // new file is not read in this case
         List<String> resultList = taiListener.getResult();
-        Assert.assertFalse(taiListener.isNewFile());
-        Assert.assertEquals(200, resultList.size());
+        Assert.assertTrue(taiListener.isNewFile());
+        Assert.assertEquals(400, resultList.size());
 
         for (int i = 0; i < 200; i++) {
             Assert.assertTrue(resultList.get(i).equals(OLD_FILE_LINE + i));
         }
 
-        // we need to update the new file to make the file read
-        writer = new BufferedWriter(new FileWriter(targetFile, true));
-        writeFile(writer, 200, 10, NEW_FILE_LINE);
-
-        Thread.sleep(1000);
-
-        resultList = taiListener.getResult();
-        Assert.assertTrue(taiListener.isNewFile());
-        Assert.assertEquals(410, resultList.size());
-
-        for (int i = 200; i < 410; i++) {
+        for (int i = 200; i < 400; i++) {
             Assert.assertTrue(resultList.get(i).equals(NEW_FILE_LINE + (i - 200)));
         }
 

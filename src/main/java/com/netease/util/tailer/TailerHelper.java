@@ -29,7 +29,7 @@ public class TailerHelper {
      *            the TailerListener to use
      */
     public static Tailer createTailer(File file, TailerListener listener) {
-        return createTailer(file, listener, 0, DEFAULT_DELAY_MILLIS);
+        return createTailer(file, listener, 0);
     }
 
     /**
@@ -44,24 +44,7 @@ public class TailerHelper {
      *            position where tailer should start
      */
     public static Tailer createTailer(File file, TailerListener listener, long position) {
-        return createTailer(file, listener, position, 0, DEFAULT_DELAY_MILLIS);
-    }
-
-    /**
-     * Creates a Tailer for the given file, starting from the beginning, with
-     * the default delay of 1.0s.
-     * 
-     * @param file
-     *            The file to follow
-     * @param listener
-     *            the TailerListener to use
-     * @param position
-     *            position where tailer should start
-     * @param lastModified
-     *            last modified time we should use for the first check
-     */
-    public static Tailer createTailer(File file, TailerListener listener, long position, long lastModified) {
-        return createTailer(file, listener, position, lastModified, DEFAULT_DELAY_MILLIS);
+        return createTailer(file, listener, position, DEFAULT_DELAY_MILLIS);
     }
 
     /**
@@ -73,15 +56,12 @@ public class TailerHelper {
      *            the TailerListener to use
      * @param position
      *            position where tailer should start
-     * @param lastModified
-     *            last modified time we should use for the first check
      * @param delayMillis
      *            the delay between checks of the file for new content in
      *            milliseconds
      */
-    public static Tailer createTailer(File file, TailerListener listener, long position, long lastModified,
-            long delayMillis) {
-        return createTailer(file, listener, position, lastModified, delayMillis, DEFAULT_BUFSIZE, false);
+    public static Tailer createTailer(File file, TailerListener listener, long position, long delayMillis) {
+        return createTailer(file, listener, position, delayMillis, DEFAULT_BUFSIZE);
     }
 
     /**
@@ -93,8 +73,6 @@ public class TailerHelper {
      *            the TailerListener to use
      * @param position
      *            position where tailer should start
-     * @param lastModified
-     *            last modified time we should use for the first check
      * @param delayMillis
      *            the delay between checks of the file for new content in
      *            milliseconds
@@ -103,8 +81,7 @@ public class TailerHelper {
      * @param bufSize
      *            buffer size
      */
-    public static Tailer createTailer(File file, TailerListener listener, long position, long lastModified,
-            long delayMillis, int bufSize, boolean reOpen) {
-        return new Tailer(file, listener, position, lastModified, delayMillis, bufSize, reOpen);
+    public static Tailer createTailer(File file, TailerListener listener, long position, long delayMillis, int bufSize) {
+        return new Tailer(file, listener, position, delayMillis, bufSize);
     }
 }
