@@ -24,7 +24,7 @@ LIB_EXT := .jnilib
 endif
 
 WORKING_DIR := .
-JAVA_BUILD_DIR := $(TARGET_DIR)
+JAVA_BUILD_DIR := $(JAVA_TARGET_DIR)
 
 ifeq ($(UNAME), Linux)
 JNI_INCLUDE := /usr/lib/jvm/java-6-openjdk/include
