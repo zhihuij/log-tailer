@@ -7,7 +7,7 @@ import java.io.InputStreamReader;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.netease.util.tailer.InodeUtil;
+import com.netease.util.InodeUtil;
 
 /**
  * 

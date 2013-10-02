@@ -1,4 +1,6 @@
-package com.netease.util.tailer;
+package com.netease.util;
+
+import java.io.IOException;
 
 /**
  * Utility class for getting inode of a file.
@@ -7,7 +9,14 @@ package com.netease.util.tailer;
  */
 public class InodeUtil {
     static {
-        System.loadLibrary("inodeutil");
+        try {
+            NativeLoader.loadLibrary("inodeutil");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println("can't find library inodeutil");
+            System.exit(1);
+        }
+        // System.loadLibrary("inodeutil");
     }
 
     /**

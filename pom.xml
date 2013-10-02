@@ -30,8 +30,27 @@
 					<showDeprecation>false</showDeprecation>
 				</configuration>
 			</plugin>
-		</plugins>
 
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.7</version>
+				<executions>
+					<execution>
+						<phase>process-classes</phase>
+						<configuration>
+							<target name="build_jni"
+								description="generate jni headers and compile the native code">
+								<echo>================build native code================</echo>
+								<exec dir="src/main/native" executable="make" failonerror="true" />
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 	</build>
 	<reporting>
 		<plugins>
