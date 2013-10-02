@@ -27,7 +27,7 @@ WORKING_DIR := .
 JAVA_BUILD_DIR := $(JAVA_TARGET_DIR)
 
 ifeq ($(UNAME), Linux)
-JNI_INCLUDE := /usr/lib/jvm/java-6-openjdk/include
+JNI_INCLUDE := /usr/lib/jvm/java-6-openjdk-amd64/include
 endif
 ifeq ($(UNAME), Darwin)
 JNI_INCLUDE := /System/Library/Frameworks/JavaVM.framework/Versions/Current/Headers
@@ -35,7 +35,7 @@ endif
 INCLUDES := -I $(JNI_INCLUDE) -I $(WORKING_DIR)
 
 ifeq ($(UNAME), Linux)
-	CCFLAGS := -O2 -shared
+	CCFLAGS := -O2 -shared -Wall -fPIC
 endif
 ifeq ($(UNAME), Darwin)
 	CCFLAGS := -O2 -dynamiclib
