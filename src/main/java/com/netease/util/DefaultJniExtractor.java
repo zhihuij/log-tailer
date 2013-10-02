@@ -13,6 +13,7 @@ import java.io.OutputStream;
  * @author Richard van der Hoff <richardv@mxtelecom.com>
  */
 public class DefaultJniExtractor implements JniExtractor {
+    private static final String LIB_PATH = "lib/";
     private static boolean debug = false;
 
     /**
@@ -79,11 +80,11 @@ public class DefaultJniExtractor implements JniExtractor {
          * find a .jnilib, try .dylib instead.
          */
         if (mappedlib.endsWith(".dylib")) {
-            if (this.getClass().getClassLoader().getResource("META-INF/lib/" + mappedlib) == null)
+            if (this.getClass().getClassLoader().getResource(LIB_PATH + mappedlib) == null)
                 mappedlib = mappedlib.substring(0, mappedlib.length() - 6) + ".jnilib";
         }
 
-        return extractResource("META-INF/lib/" + mappedlib, mappedlib);
+        return extractResource(LIB_PATH + mappedlib, mappedlib);
     }
 
     /**

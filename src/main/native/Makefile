@@ -10,9 +10,10 @@ CLASS_NAME := com.netease.util.InodeUtil
 CLASS_FILE_PATH := $(subst .,/,$(CLASS_NAME))
 FILE_NAME_PREFIX := $(subst .,_,$(CLASS_NAME))
 
-TARGET_DIR := ../../../target/classes
+JAVA_TARGET_DIR := ../../../target/classes
+TARGET_DIR := ../resources
 
-TARGET=$(TARGET_DIR)/META-INF/lib/lib$(LIBNAME)$(LIB_EXT)
+TARGET=$(TARGET_DIR)/lib/lib$(LIBNAME)$(LIB_EXT)
 
 UNAME := $(shell uname)
 ifeq ($(UNAME), Linux)
@@ -54,5 +55,5 @@ $(TARGET): $(FILE_NAME_PREFIX).h
 	@mkdir -p `dirname $@`
 	gcc $(CCFLAGS) $(INCLUDES) $(FILE_NAME_PREFIX).cpp -o $(TARGET)
 
-com_netease_util_InodeUtil.h: $(TARGET_DIR)/$(CLASS_FILE_PATH).class
+com_netease_util_InodeUtil.h: $(JAVA_TARGET_DIR)/$(CLASS_FILE_PATH).class
 	javah -force -classpath $(JAVAH_CLASSPATH) $(CLASS_NAME)
