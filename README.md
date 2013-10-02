@@ -7,11 +7,11 @@ Clone this repo:
 
     git clone https://github.com/onlychoice/file-tailer.git
 
-and run
+run
 
-    mvn package (or mvn deploy for deploying the package to the maven repository)
+    mvn package # or mvn deploy for deploying the package to the maven repository
 
-and add the package to the classpath, or use maven dependency:
+add the package to the classpath, or use maven dependency:
 
 	<dependency>
 		<groupId>com.netease.util</groupId>
@@ -19,7 +19,7 @@ and add the package to the classpath, or use maven dependency:
 		<version>1.0.0</version>
 	</dependency>
 
-and use following code to start the tailer on a file:
+use following code to start the tailer on a file:
 
 ```java
 Tailer tailer = TailerHelper.createTailer(targetFile, tailListener, 0);
