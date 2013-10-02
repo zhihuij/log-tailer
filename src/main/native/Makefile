@@ -55,5 +55,5 @@ $(TARGET): $(FILE_NAME_PREFIX).h
 	@mkdir -p `dirname $@`
 	gcc $(CCFLAGS) $(INCLUDES) $(FILE_NAME_PREFIX).cpp -o $(TARGET)
 
-com_netease_util_InodeUtil.h: $(JAVA_TARGET_DIR)/$(CLASS_FILE_PATH).class
+$(FILE_NAME_PREFIX).h: $(JAVA_TARGET_DIR)/$(CLASS_FILE_PATH).class
 	javah -force -classpath $(JAVAH_CLASSPATH) $(CLASS_NAME)
