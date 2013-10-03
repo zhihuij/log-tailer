@@ -2,10 +2,14 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.netease.util</groupId>
-	<artifactId>file-tailer</artifactId>
-	<version>1.0.0</version>
-	<name>File Tailer</name>
+	<artifactId>log-tailer</artifactId>
+	<version>${build.version}</version>
+	<name>LogTailer</name>
 	<description>Utility class for tailing log files.</description>
+
+	<properties>
+		<build.version>1.0.0</build.version>
+	</properties>
 
 	<dependencies>
 		<dependency>
@@ -17,7 +21,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>web_project_template</finalName>
+		<finalName>log-tailer-${build.version}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

@@ -1,11 +1,11 @@
-file-tailer - A simple tool for tailing files.
+log-tailer - A simple tool for tailing log files.
 ===============
 
 Getting Started
 ---------------
 Clone this repo:
 
-    git clone https://github.com/onlychoice/file-tailer.git
+    git clone https://github.com/onlychoice/log-tailer.git
 
 run
 
@@ -15,7 +15,7 @@ add the package to the classpath, or use maven dependency:
 
 	<dependency>
 		<groupId>com.netease.util</groupId>
-		<artifactId>file-tailer</artifactId>
+		<artifactId>log-tailer</artifactId>
 		<version>1.0.0</version>
 	</dependency>
 
