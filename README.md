@@ -1,6 +1,3 @@
-log-tailer - A simple tool for tailing log files.
-===============
-
 Getting Started
 ---------------
 Clone this repo:
