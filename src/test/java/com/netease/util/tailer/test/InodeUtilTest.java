@@ -10,7 +10,7 @@ import org.junit.Test;
 import com.netease.util.InodeUtil;
 
 /**
- * 
+ * Test case for getting inode.
  * 
  * @author jiaozhihui@corp.netease.com
  */

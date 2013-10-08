@@ -12,11 +12,9 @@ public class InodeUtil {
         try {
             NativeLoader.loadLibrary("inodeutil");
         } catch (IOException e) {
-            e.printStackTrace();
             System.err.println("can't find library inodeutil");
             System.exit(1);
         }
-        // System.loadLibrary("inodeutil");
     }
 
     /**
