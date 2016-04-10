@@ -1,5 +1,6 @@
 package com.netease.util.tailer;
 
+import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -248,25 +249,30 @@ public final class Tailer implements Runnable {
         long pos = reader.getFilePointer();
         long rePos = pos; // position to re-read
 
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         int num;
         while (run && ((num = reader.read(inbuf)) != -1)) {
             for (int i = 0; i < num; i++) {
                 byte ch = inbuf[i];
                 switch (ch) {
                 case '\n':
+                    sb.append(new String(out.toByteArray(), "utf-8"));
                     listener.handle(sb.toString(), pos + i + 1, file.lastModified());
+                    out.reset();
                     sb.setLength(0);
                     rePos = pos + i + 1;
                     break;
                 case '\r':
                     if (sb.length() != 0) {
+                        sb.append(new String(out.toByteArray(), "utf-8"));
                         listener.handle(sb.toString(), pos + i + 1, file.lastModified());
+                        out.reset();
                         sb.setLength(0);
                     }
                     rePos = pos + i + 1;
                     break;
                 default:
-                    sb.append((char) ch); // add character, not its ascii value
+                    out.write(ch);
                 }
             }
 
