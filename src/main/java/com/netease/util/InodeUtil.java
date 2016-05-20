@@ -8,6 +8,9 @@ import java.io.IOException;
  * @author jiaozhihui@corp.netease.com
  */
 public class InodeUtil {
+    
+    private InodeUtil() {}
+    
     static {
         try {
             NativeLoader.loadLibrary("inodeutil");

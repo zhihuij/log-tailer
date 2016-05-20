@@ -24,6 +24,8 @@ import java.io.IOException;
  */
 public class NativeLoader {
     private static JniExtractor jniExtractor = new DefaultJniExtractor();
+    
+    private NativeLoader() {}
 
     /**
      * Extract the given library from a jar, and load it.
