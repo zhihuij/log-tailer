@@ -79,9 +79,9 @@ public class DefaultJniExtractor implements JniExtractor {
          * that library interdependencies are handled correctly. if we don't
          * find a .jnilib, try .dylib instead.
          */
-        if (mappedlib.endsWith(".dylib")) {
-            if (this.getClass().getClassLoader().getResource(LIB_PATH + mappedlib) == null)
-                mappedlib = mappedlib.substring(0, mappedlib.length() - 6) + ".jnilib";
+        if (mappedlib.endsWith(".dylib") 
+                && this.getClass().getClassLoader().getResource(LIB_PATH + mappedlib) == null) {
+            mappedlib = mappedlib.substring(0, mappedlib.length() - 6) + ".jnilib";
         }
 
         return extractResource(LIB_PATH + mappedlib, mappedlib);
@@ -124,7 +124,7 @@ public class DefaultJniExtractor implements JniExtractor {
      */
     static void copy(InputStream in, OutputStream out) throws IOException {
         byte[] tmp = new byte[8192];
-        int len = 0;
+        int len;
         while (true) {
             len = in.read(tmp);
             if (len <= 0) {
