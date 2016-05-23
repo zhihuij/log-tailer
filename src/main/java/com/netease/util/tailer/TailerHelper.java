@@ -18,6 +18,8 @@ public class TailerHelper {
      * Default buffer size for reading.
      */
     private static final int DEFAULT_BUFSIZE = 4096;
+    
+    private TailerHelper() {}
 
     /**
      * Creates a Tailer for the given file, starting from the beginning, with
